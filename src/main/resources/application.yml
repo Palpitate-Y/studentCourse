@@ -1,0 +1,43 @@
+#spring:
+#  jackson:
+#    time-zone: GMT+8
+#  thymeleaf:
+#    cache: false
+#    prefix: classpath:/templates/
+#    suffix: .html
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/student_course?useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+#    username: root
+#    password: admin
+#mybatis:
+#  mapper-locations: classpath:/static/mapper/*.xml
+#  configuration:
+#    # 驼峰命名的映射
+#    map-underscore-to-camel-case: true
+#  type-aliases-package: cui.xin.studentcourse.bean
+#server:
+#  port: 8080
+
+spring:
+  jackson:
+    time-zone: GMT+8
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/education?useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+
+server:
+  port: 8081
+mybatis-plus:
+  mapper-locations: classpath:/static/mapper/*.xml
+  configuration:
+    # 驼峰命名的映射
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  type-aliases-package: cui.xin.studentcourse.bean

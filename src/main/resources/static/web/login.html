@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+
+    <title>登录页面</title>
+
+    <!--导入核心文件-->
+    <script src="../bootstrap3/jquery-1.9.1.min.js"></script>
+    <script src="../bootstrap3/js/jquery.cookie.js" type="text/javascript" charset="utf-8"></script>
+    <!--	js代码	-->
+    <script type="text/javascript">
+        //给图片验证码绑定点击事件，刷新验证码
+        function reFlashImg(imgId) {
+            let kaptcha = document.getElementById(imgId)
+            kaptcha.src = "/kaptcha/kaptcha-image?time=" + new Date();
+        }
+
+        //显示或隐藏密码的方法
+        function showPasswordOrNot(eleId, imgId) {
+            let pwd = document.getElementById(eleId)
+            let img = document.getElementById(imgId)
+            if (pwd.type == "password") {
+                pwd.type = "text";
+                img.src = "../images/img/close.jpeg"
+            } else {
+                pwd.type = "password";
+                img.src = "../images/img/open.jpeg"
+            }
+        }
+
+        //登录的方法
+        function login() {
+            //给用户登录绑定点击事件
+            $("#btn-login").click(function () {
+                alert("1");
+                alert($("#student_id").val());
+                if ($("#student_id").val() == "" || $("#password").val() == "") {
+                    $("#error-msg").html("请先输入登录信息")
+                    return false;
+                }
+                if ($("#code").val() == "") {
+                    $("#error-msg").html("验证码不能为空")
+                    return false;
+                }
+                //上面均没有问题则发送请求
+                $.ajax({
+                    url: "/student/login",
+                    type: "get",
+                    data: $("#form-login").serialize(), //获取表单的所有内容
+                    dataType: "json",
+                    success: function (res) {
+                        if (res.status === 200) {
+                            alert("登录成功！");
+                            //前往首页
+                            window.location.href = "index.html";
+                            //将用户信息存入session域中
+                            sessionStorage.setItem("student", JSON.stringify(res.data));
+                        } else {
+                            $("#error-msg").html(res.message)
+                        }
+                    },
+                    error: function (error) {
+                        alert(error.status + "错误,服务器出现故障，请等待攻城狮修复！！")
+                    }
+                });
+            })
+        }
+
+        $(function () {
+            //给修改密码绑定点击事件
+            $("#btn-toRestPassword").click(function () {
+                location.href = "Password.html"
+            })
+
+        })
+    </script>
+
+</head>
+<body>
+
+<!--表单开始-->
+<form id="form-login" style="padding-top: 10px" class="form-horizontal" role="form">
+    <!--用户名-->
+
+    账号：
+    <input id="student_id" name="student_id" type="text" class="form-control" placeholder="请输入账号"></br>
+    <!--密码-->
+    密码：
+    <input id="password" name="password" type="password" class="form-control" id="password" placeholder="请输入密码">
+    <img id="img" onclick="showPasswordOrNot('password','img')" src="../images/img/open.jpeg"
+         style="width: 20px;padding-top: 4px;"> </br>
+    验证码：
+    <input id="code" name="code" type="text" style="width: 120px;height: 40px" class="form-control"
+           placeholder="请输入验证码"/>
+
+    <img id="loginKaptcha" src="/kaptcha/kaptcha-image" onclick="reFlashImg('loginKaptcha')"
+         style="width: 140px;height: 45px;"/></br>
+    <!--提交按钮-->
+    <div class="form-group">
+        <input id="btn-login" class="btn btn-primary" type="button" value="登录"/>
+        <input id="btn-toRestPassword" class="btn btn-primary" type="button" value="忘记密码"/>
+        <span class="pull-right"><small>还没有账号？</small><a href="register.html">注册</a></span>
+    </div>
+</form>
+</div>
+</div>
+
+</body>
+</html>

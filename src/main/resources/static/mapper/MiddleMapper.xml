@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cui.xin.studentcourse.mapper.MiddleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <!--    <resultMap id="BaseResultMap" type="work.pal.workproject_1108.pojo.Middle">-->
+    <!--        <result column="student_id" property="studentId" />-->
+    <!--        <result column="student_name" property="studentName" />-->
+    <!--        <result column="course_id" property="courseId" />-->
+    <!--        <result column="course_name" property="courseName" />-->
+    <!--        <result column="course_grade" property="courseGrade" />-->
+    <!--    </resultMap>-->
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        sc
+        .
+        student_id
+        , sc.student_name,sc.course_id ,sc.course_name, sc.course_grade, c.course_year, c.course_type
+    </sql>
+    <!--查询全部成绩-->
+    <select id="showAllGrade" resultType="cui.xin.studentcourse.dto.MiddleDto" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"></include>
+        from t_sc_info sc
+        left join t_course c USING (course_id)
+        where student_id = #{studentId}
+    </select>
+
+    <!--根据条件查询-->
+    <select id="showGradeByCondition" resultType="cui.xin.studentcourse.dto.MiddleDto">
+        select
+        <include refid="Base_Column_List"></include>
+        from t_sc_info sc
+        left join t_course c USING (course_id)
+        <where>
+            student_id=#{studentId}
+            <if test="Course!=null">
+                <if test="Course.courseType!=null and Course.courseType!=''">
+                    and c.courseType=#{Course.courseType}
+                </if>
+                <if test="Course.courseYear != null and Course.courseYear != ''">
+                    and c.course_year = #{Course.courseYear}
+                </if>
+                <if test="Course.courseName != null and Course.courseName != ''">
+                    and sc.course_name like CONCAT(CONCAT(%,#{courseName}),'%')
+                </if>
+            </if>
+        </where>
+    </select>
+    <!--查询未通过的成绩-->
+    <select id="showNoPassGrade" resultType="cui.xin.studentcourse.dto.MiddleDto">
+        select
+        <include refid="Base_Column_List"></include>
+        from t_sc_info sc
+        left join t_course c USING (course_id)
+        where student_id = #{studentId}
+        and sc.course_grade &lt; 60
+        and sc.course_grade IS NOT NULL
+        order by sc.course_grade DESC
+    </select>
+
+    <!--查询已通过的成绩-->
+    <select id="showPassGrade" resultType="cui.xin.studentcourse.dto.MiddleDto">
+        select
+        <include refid="Base_Column_List"></include>
+        from t_sc_info sc
+        left join t_course c USING (course_id)
+        where student_id=#{studentId}
+        and sc.course_grade &gt;=60
+        order by sc.course_grade DESC
+    </select>
+
+
+</mapper>

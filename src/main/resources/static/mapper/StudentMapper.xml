@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cui.xin.studentcourse.mapper.StudentMapper">
+    <insert id="addStudent">
+        insert into t_student(student_id, student_name, student_sex, password, mobile, salt)
+        values (#{student_id}, #{student_name}, #{student_sex}, #{password}, #{mobile}, #{salt})
+    </insert>
+    <!-- 询的结果集字段和实体类的student属性名不一致，自定义查询结果集的映射规则   -->
+    <resultMap id="queryStudent" type="student">
+        <id property="studentId" column="student_id"/>
+        <result property="studentName" column="student_name"/>
+        <result property="studentSex" column="student_sex"/>
+        <result property="password" column="password"/>
+        <result property="mobile" column="mobile"/>
+        <result property="salt" column="salt"/>
+    </resultMap>
+
+    <!--   Student queryStudentBystudent_name(@Param("student_name") String student_name); -->
+    <!--  用于查询的结果集字段和实体类的student属性名不一致，所以不能使用resultType，必须使用resultMap  -->
+    <select id="queryStudentByStudentName" resultMap="queryStudent">
+        select *
+        from t_student
+        where student_name = #{student_name}
+    </select>
+
+
+    <!--    Student queryStudentBystudent_id(@Param("student_id") Integer student_id);-->
+    <select id="queryStudentByStudentId" resultMap="queryStudent">
+        select *
+        from t_student
+        where student_id = #{student_id}
+    </select>
+    <select id="queryStudentByStudentIdAndMobile" resultMap="queryStudent">
+        select *
+        from t_student
+        where student_id = #{student_id} and mobile = #{mobile}
+    </select>
+    <update id="updatePassword">
+        update t_student set password =#{password}
+        where student_id = #{student_id} and mobile = #{mobile}
+    </update>
+
+
+    <select id="queryStudentByConditiation" resultType="cui.xin.studentcourse.dto.StudentDto"
+            parameterType="cui.xin.studentcourse.dto.StudentDto">
+        select DISTINCT t.student_name,
+        t.student_sex,
+        t.mobile,
+        c.course_name,
+        m.course_grade,
+        c.course_type,
+        c.course_time,
+        c.course_address,
+        c.course_teacher
+        from t_student t
+        LEFT JOIN t_sc_info m USING (student_id)
+        LEFT JOIN t_course c USING (course_id)
+        <where>
+
+                <if test="courseType != null and courseType != ''">
+                    and c.course_type = #{courseType}
+                </if>
+                <if test="courseTime != null and courseTime != ''">
+                    and c.course_time = #{courseTime}
+                </if>
+                <if test="courseName != null and courseName != ''">
+                    and c.course_name like CONCAT(CONCAT(%,#{courseName}),'%')
+                </if>
+                <if test="courseTeacher != null and courseTeacher != ''">
+                    and c.course_teacher = #{courseTeacher}
+                </if>
+
+        </where>
+    </select>
+</mapper>
